@@ -5,76 +5,69 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Frameworks;
 using PD_212_MVC.Data;
 using PD_212_MVC.Models;
 
-namespace PD_212_MVC.Views.Teachers
+namespace PD_212_MVC.Controllers
 {
-    public class TeachersController : Controller
+    public class StudentsController : Controller
     {
         private readonly AcademyContext _context;
 
-        public TeachersController(AcademyContext context)
+        public StudentsController(AcademyContext context)
         {
             _context = context;
         }
 
-        // GET: Teachers
+        // GET: Students
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            ViewData["LastNameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
+            ViewData["LastNameSortParam"] = string.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
             ViewData["FirstNameSortParam"] = sortOrder == "FirstName" ? "first_name_desc" : "FirstName";
             ViewData["MiddleNameSortParam"] = sortOrder == "MiddleName" ? "middle_name_desc" : "MiddleName";
             ViewData["BirthDateSortParam"] = sortOrder == "BirthDate" ? "birth_date_desc" : "BirthDate";
-            ViewData["WorkDateSortParam"] = sortOrder == "WorkDate" ? "work_date_desc" : "WorkDate";
             ViewData["CurrentFilter"] = searchString;
 
-            IQueryable<Teacher> teachers = from t in _context.Teachers select t;
+            IQueryable<Student> students = from s in _context.Students select s;
 
-            if (!String.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                teachers = teachers.Where(t => t.last_name.Contains(searchString)
-                                       || t.first_name.Contains(searchString)
-                                       || t.middle_name!.Contains(searchString));
+                students = students.Where(s => s.last_name.Contains(searchString)
+                                       || s.first_name.Contains(searchString)
+                                       || s.middle_name!.Contains(searchString));
             }
             switch (sortOrder)
             {
                 case "last_name_desc":
-                    teachers = teachers.OrderByDescending(t => t.last_name);
+                    students = students.OrderByDescending(t => t.last_name);
                     break;
                 case "FirstName":
-                    teachers = teachers.OrderBy(t => t.first_name);
+                    students = students.OrderBy(t => t.first_name);
                     break;
                 case "first_name_desc":
-                    teachers = teachers.OrderByDescending(t => t.first_name);
+                    students = students.OrderByDescending(t => t.first_name);
                     break;
                 case "MiddleName":
-                    teachers = teachers.OrderBy(t => t.middle_name);
+                    students = students.OrderBy(t => t.middle_name);
                     break;
                 case "middle_name_desc":
-                    teachers = teachers.OrderByDescending(t => t.middle_name);
+                    students = students.OrderByDescending(t => t.middle_name);
                     break;
                 case "BirthDate":
-                    teachers = teachers.OrderBy(t => t.birth_date);
+                    students = students.OrderBy(t => t.birth_date);
                     break;
                 case "birth_date_desc":
-                    teachers = teachers.OrderByDescending(t => t.birth_date);
-                    break;
-                case "WorkDate":
-                    teachers = teachers.OrderBy(t => t.work_since);
-                    break;
-                case "work_date_desc":
-                    teachers = teachers.OrderByDescending(t => t.work_since);
+                    students = students.OrderByDescending(t => t.birth_date);
                     break;
                 default:
-                    teachers = teachers.OrderBy(t => t.last_name);
+                    students = students.OrderBy(t => t.last_name);
                     break;
             }
-            return View(await teachers.AsNoTracking().ToListAsync());
+
+            return View(await students.AsNoTracking().ToListAsync());
         }
 
-        // GET: Teachers/Details/5
+        // GET: Students/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -82,39 +75,39 @@ namespace PD_212_MVC.Views.Teachers
                 return NotFound();
             }
 
-            var teacher = await _context.Teachers
-                .FirstOrDefaultAsync(m => m.teacher_id == id);
-            if (teacher == null)
+            var student = await _context.Students
+                .FirstOrDefaultAsync(m => m.stud_id == id);
+            if (student == null)
             {
                 return NotFound();
             }
 
-            return View(teacher);
+            return View(student);
         }
 
-        // GET: Teachers/Create
+        // GET: Students/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Teachers/Create
+        // POST: Students/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("teacher_id,last_name,first_name,middle_name,birth_date,work_since")] Teacher teacher)
+        public async Task<IActionResult> Create([Bind("stud_id,last_name,first_name,middle_name,birth_date")] Student student)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(teacher);
+                _context.Add(student);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // GET: Teachers/Edit/5
+        // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -122,22 +115,22 @@ namespace PD_212_MVC.Views.Teachers
                 return NotFound();
             }
 
-            var teacher = await _context.Teachers.FindAsync(id);
-            if (teacher == null)
+            var student = await _context.Students.FindAsync(id);
+            if (student == null)
             {
                 return NotFound();
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // POST: Teachers/Edit/5
+        // POST: Students/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("teacher_id,last_name,first_name,middle_name,birth_date,work_since")] Teacher teacher)
+        public async Task<IActionResult> Edit(int id, [Bind("stud_id,last_name,first_name,middle_name,birth_date")] Student student)
         {
-            if (id != teacher.teacher_id)
+            if (id != student.stud_id)
             {
                 return NotFound();
             }
@@ -146,12 +139,12 @@ namespace PD_212_MVC.Views.Teachers
             {
                 try
                 {
-                    _context.Update(teacher);
+                    _context.Update(student);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TeacherExists(teacher.teacher_id))
+                    if (!StudentExists(student.stud_id))
                     {
                         return NotFound();
                     }
@@ -162,10 +155,10 @@ namespace PD_212_MVC.Views.Teachers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(teacher);
+            return View(student);
         }
 
-        // GET: Teachers/Delete/5
+        // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -173,34 +166,34 @@ namespace PD_212_MVC.Views.Teachers
                 return NotFound();
             }
 
-            var teacher = await _context.Teachers
-                .FirstOrDefaultAsync(m => m.teacher_id == id);
-            if (teacher == null)
+            var student = await _context.Students
+                .FirstOrDefaultAsync(m => m.stud_id == id);
+            if (student == null)
             {
                 return NotFound();
             }
 
-            return View(teacher);
+            return View(student);
         }
 
-        // POST: Teachers/Delete/5
+        // POST: Students/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var teacher = await _context.Teachers.FindAsync(id);
-            if (teacher != null)
+            var student = await _context.Students.FindAsync(id);
+            if (student != null)
             {
-                _context.Teachers.Remove(teacher);
+                _context.Students.Remove(student);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TeacherExists(int id)
+        private bool StudentExists(int id)
         {
-            return _context.Teachers.Any(e => e.teacher_id == id);
+            return _context.Students.Any(e => e.stud_id == id);
         }
     }
 }

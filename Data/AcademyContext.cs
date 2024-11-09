@@ -15,5 +15,6 @@ namespace PD_212_MVC.Data
         }
 
         public DbSet<PD_212_MVC.Models.Teacher> Teachers { get; set; } = default!;
+        public DbSet<PD_212_MVC.Models.Student> Students { get; set; } = default!;
     }
 }
