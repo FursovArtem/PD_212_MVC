@@ -9,7 +9,7 @@ using NuGet.Frameworks;
 using PD_212_MVC.Data;
 using PD_212_MVC.Models;
 
-namespace PD_212_MVC.Views.Teachers
+namespace PD_212_MVC.Controllers
 {
     public class TeachersController : Controller
     {
@@ -23,7 +23,7 @@ namespace PD_212_MVC.Views.Teachers
         // GET: Teachers
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            ViewData["LastNameSortParam"] = String.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
+            ViewData["LastNameSortParam"] = string.IsNullOrEmpty(sortOrder) ? "last_name_desc" : "";
             ViewData["FirstNameSortParam"] = sortOrder == "FirstName" ? "first_name_desc" : "FirstName";
             ViewData["MiddleNameSortParam"] = sortOrder == "MiddleName" ? "middle_name_desc" : "MiddleName";
             ViewData["BirthDateSortParam"] = sortOrder == "BirthDate" ? "birth_date_desc" : "BirthDate";
@@ -32,7 +32,7 @@ namespace PD_212_MVC.Views.Teachers
 
             IQueryable<Teacher> teachers = from t in _context.Teachers select t;
 
-            if (!String.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
                 teachers = teachers.Where(t => t.last_name.Contains(searchString)
                                        || t.first_name.Contains(searchString)
